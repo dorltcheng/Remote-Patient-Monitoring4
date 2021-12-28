@@ -58,7 +58,7 @@ public class EmergencyUIController extends JFrame {
                         WModel.addElement(aPat.name + " " + aPat.abnormalDetails + " " + aPat.patLoc);
                     }
 
-                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ " " + aPat.alertHistory+ "\n");
+                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n" + aPat.alertHistory+ "\n");
 
                 }
 
@@ -71,6 +71,8 @@ public class EmergencyUIController extends JFrame {
         };
         timer.schedule(displayAlert, 0, 1000);
 /*
+No need now:
+
         UrgentPatName.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {

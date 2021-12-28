@@ -1,7 +1,7 @@
 // Where everything runs here
 
 
-import java.util.ArrayList;
+        import java.util.ArrayList;
 
 public class Main {
 
@@ -44,4 +44,15 @@ public class Main {
 
 
 }
+
+
+/*
+Notes:
+- AlertList is not used now (Alert class is not used now)
+- AlertDisplay is not used
+
+To do:
+- Implement clock and save the exact time and date instead of seconds
+
+ */
 
