@@ -36,6 +36,7 @@ public class EmergencyUIController extends JFrame {
     private JList warningDetailsList;
 
     public EmergencyUIController(ArrayList<Patient> patientList){
+
         final int[] counter = {0};
         Timer timer = new Timer();
         TimerTask displayAlert = new TimerTask() {
@@ -63,7 +64,7 @@ public class EmergencyUIController extends JFrame {
                 }
 
                 counter[0]++;
-                if (counter[0]==10){
+                if (counter[0]==20){        // hard code the time to stop
                     timer.cancel();
                 }
 
