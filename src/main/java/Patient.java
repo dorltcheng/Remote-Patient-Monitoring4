@@ -15,9 +15,16 @@ public class Patient {
     double[] hr = new double[length];
     double[] rr = new double[length];
     double[] ecg = new double[length];
+
     List<String> abnormalDetails = new ArrayList<String>();
 
-    ArrayList<String> alertHistory = new ArrayList<>();
+    String tempFlag = new String();
+    String hrFlag = new String();
+    String rrFlag = new String();
+
+    ArrayList<String> alertHistoryTemp = new ArrayList<>();
+    ArrayList<String> alertHistoryHR = new ArrayList<>();
+    ArrayList<String> alertHistoryRR = new ArrayList<>();
 
     public Patient(String name, String alertStatus, String patLoc, int length, double[] temp, double[] hr, double[] rr){
         this.name = name;

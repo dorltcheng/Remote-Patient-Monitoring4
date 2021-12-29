@@ -1,6 +1,8 @@
 // Where everything runs here
 
 
+        import java.time.Clock;
+        import java.time.Instant;
         import java.util.ArrayList;
 
 public class Main {
@@ -30,12 +32,11 @@ public class Main {
         patientList.add(pat2);
         patientList.add(pat3);
 
-        ArrayList<Alert> alertList = mainMenu.realTimeAlertChecker(patientList);
+        mainMenu.realTimeAlertChecker(patientList);
         //ArrayList<Alert> alertList = mainMenu.alertChecker(patientList);
 
         EmergencyUIController emUIController = new EmergencyUIController(patientList);
 
-        System.out.println(pat1.alertHistory);
         System.out.println(pat1.alertStatus);
 
 
@@ -53,6 +54,17 @@ Notes:
 
 To do:
 - Implement clock and save the exact time and date instead of seconds
+- turn alertHistroy into ArrayList with size 9
+    - array[0]: temp_flag (0: normal, 1: abnormal)
+    - array[1]: temp_start time
+    - array[2]: temp_end time
+    - array[3]: hr_flag
+    - array[4]: hr_start time
+    - array[5]: hr_end time
+    - array[6]: rr_flag
+    - array[7]: rr_start time
+    - array[8]: rr_end time
+
 
  */
 

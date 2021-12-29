@@ -59,7 +59,7 @@ public class EmergencyUIController extends JFrame {
                         WModel.addElement(aPat.name + " " + aPat.abnormalDetails + " " + aPat.patLoc);
                     }
 
-                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n" + aPat.alertHistory+ "\n");
+                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n" + aPat.alertHistoryTemp+"\n" + aPat.alertHistoryHR+"\n"+aPat.alertHistoryRR+"\n");
 
                 }
 

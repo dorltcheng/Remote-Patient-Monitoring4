@@ -1,3 +1,5 @@
+import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -6,87 +8,7 @@ public interface mainMenu {
 
     ArrayList<Alert> alertList = new ArrayList<Alert>();
 
-    /*
-    Should have the method to get PatientList from database class:
-        public getPatientList()
-
-    */
-    /*
-    static ArrayList<Alert> alertChecker(ArrayList<Patient> patientList) {
-        double tempUThreshold = 40.0;
-        double hrUThreshold = 130.0;
-        double rrUThreshold = 25.0;
-
-        double tempWThreshold = 38.0;
-        double hrWThreshold = 110.0;
-        double rrWThreshold = 20.0;
-
-        // We are not accounting for abnormalities of ECG and BP here (wave format)
-
-        // Assuming patient's temp, bp, hr, rr are all doubles, need further conversion later
-        for (Patient pat : patientList) {
-
-            List<String> abnormalDetails = new ArrayList<String>();
-
-            int i = pat.length;
-
-            for (i = 0; i < pat.length; i++) {
-                if (pat.temp[i] > tempWThreshold && pat.temp[i] < tempUThreshold) {
-                    String temp = "High Temperature";
-                    abnormalDetails.add(temp);
-                    pat.alertStatus = "Warning";
-                    pat.alertHistory.add("High Temperature @time: " + i + " second \n");
-                }
-
-                if (pat.hr[i] > hrWThreshold && pat.hr[i] < hrUThreshold) {
-                    String hr = "High Heart Rate";
-                    abnormalDetails.add(hr);
-                    pat.alertStatus = "Warning";
-                    pat.alertHistory.add("High Heart Rate @time: " + i + " second \n");
-                }
-
-                if (pat.rr[i] > rrWThreshold && pat.rr[i] < rrUThreshold) {
-                    String rr = "High Respiratory Rate";
-                    abnormalDetails.add(rr);
-                    pat.alertStatus = "Warning";
-                    pat.alertHistory.add("High Respiratory Rate @time: " + i + " second \n");
-                }
-
-                if (pat.temp[i] > tempUThreshold) {
-                    String temp = "Very High Temperature";
-                    abnormalDetails.add(temp);
-                    pat.alertStatus = "Urgent";
-                    pat.alertHistory.add("Very High Temperature @time: " + i + " second \n");
-                }
-
-                if (pat.hr[i] > hrUThreshold) {
-                    String hr = "Very High Heart Rate";
-                    abnormalDetails.add(hr);
-                    pat.alertStatus = "Urgent";
-                    pat.alertHistory.add("Very High Heart Rate @time: " + i + " second \n");
-                }
-
-                if (pat.rr[i] > rrUThreshold) {
-                    String rr = "Very High Respiratory Rate";
-                    abnormalDetails.add(rr);
-                    pat.alertStatus = "Urgent";
-                    pat.alertHistory.add("Very High Respiratory Rate @time: " + i + " second \n");
-                }
-
-            }
-            // Add the emergency patients into alertList by creating an Alert class object for each of them
-            if (pat.alertStatus == "Warning" || pat.alertStatus == "Urgent") {
-                Alert a = new Alert(pat.name, pat.alertStatus, abnormalDetails, pat.patLoc);
-                alertList.add(a);
-            }
-            // abnormalDetails.clear();
-        }
-        return alertList;
-    }
-
-     */
-
-    static ArrayList<Alert> realTimeAlertChecker(ArrayList<Patient> patientList) {
+    static void realTimeAlertChecker(ArrayList<Patient> patientList) {
         double tempUThreshold = 40.0;
         double hrUThreshold = 130.0;
         double rrUThreshold = 25.0;
@@ -98,68 +20,226 @@ public interface mainMenu {
         int duration = patientList.get(0).length;       // need this cuz now the data is small, if 24h data do not need to cancel the timer cuz it will keep looping
         final int[] i = {0};
 
+        for (Patient pat:patientList){
+            pat.tempFlag = "H";
+
+            pat.hrFlag = "H";
+
+            pat.rrFlag = "H";
+        }
+
+        Clock clock = Clock.systemDefaultZone();
+
         Timer timer = new Timer();
         TimerTask alertCheck = new TimerTask(){
 
             @Override
             public void run() {
-                
-                // Assuming patient's temp, bp, hr, rr are all doubles, need further conversion later
+
+                /* About alertHistory
+                    - alertHistory.add()
+                 */
+
 
                 for (Patient pat:patientList) {
 
                     pat.alertStatus = "Healthy";
                     pat.abnormalDetails.clear();
 
-                    if (pat.temp[i[0]] > tempWThreshold && pat.temp[i[0]] < tempUThreshold) {
-                        String temp = "High Temperature";
-                        pat.abnormalDetails.add(temp);
-                        pat.alertStatus = "Warning";
-                        pat.alertHistory.add("High Temperature @time: " + i[0] + " second \n");
+                    // TEMPERATURE
+                    if (pat.tempFlag == "H"){
+                        if (pat.temp[i[0]] > tempWThreshold && pat.temp[i[0]] < tempUThreshold) {
+                            String temp = "High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Warning";
+                            pat.tempFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Warning Start: "+ instant.toString());
+                        }
+                        if (pat.temp[i[0]] > tempUThreshold) {
+                            String temp = "Very High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Urgent";
+                            pat.tempFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Urgent Start: "+instant.toString());
+                        }
+                    }
+                    else if (pat.tempFlag == "W"){
+                        if (pat.temp[i[0]] > tempWThreshold && pat.temp[i[0]] < tempUThreshold) {
+                            String temp = "High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Warning";
+                        }
+                        if (pat.temp[i[0]] > tempUThreshold) {
+                            String temp = "Very High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Urgent";
+                            pat.tempFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Warning ends: "+ instant.toString());
+                            pat.alertHistoryTemp.add("Urgent starts: "+ instant.toString());
+                        }
+                        if (pat.temp[i[0]] < tempWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.tempFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Warning ends: " +instant.toString());
+                        }
+                    }
+                    else if (pat.tempFlag == "U"){
+                        if (pat.temp[i[0]] > tempWThreshold && pat.temp[i[0]] < tempUThreshold) {
+                            String temp = "High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Warning";
+                            pat.tempFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Urgent ends: "+ instant.toString());
+                            pat.alertHistoryTemp.add("Warning starts: "+ instant.toString());
+
+                        }
+                        if (pat.temp[i[0]] > tempUThreshold) {
+                            String temp = "Very High Temperature";
+                            pat.abnormalDetails.add(temp);
+                            pat.alertStatus = "Urgent";
+                        }
+                        if (pat.temp[i[0]] < tempWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.tempFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryTemp.add("Urgent ends: " +instant.toString());
+                        }
                     }
 
-                    if (pat.hr[i[0]] > hrWThreshold && pat.hr[i[0]] < hrUThreshold) {
-                        String hr = "High Heart Rate";
-                        pat.abnormalDetails.add(hr);
-                        pat.alertStatus = "Warning";
-                        pat.alertHistory.add("High Heart Rate @time: " + i[0] + " second \n");
+                    // HEART RATE
+                    if (pat.hrFlag == "H"){
+                        if (pat.hr[i[0]] > hrWThreshold && pat.hr[i[0]] < hrUThreshold) {
+                            String hr = "High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Warning";
+                            pat.hrFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Warning Start: "+ instant.toString());
+                        }
+                        if (pat.hr[i[0]] > hrUThreshold) {
+                            String hr = "Very High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Urgent";
+                            pat.hrFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Urgent Start: "+instant.toString());
+                        }
+                    }
+                    else if (pat.hrFlag == "W"){
+                        if (pat.hr[i[0]] > hrWThreshold && pat.hr[i[0]] < hrUThreshold) {
+                            String hr = "High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Warning";
+                        }
+                        if (pat.hr[i[0]] > hrUThreshold) {
+                            String hr = "Very High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Urgent";
+                            pat.hrFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Warning ends: "+ instant.toString());
+                            pat.alertHistoryHR.add("Urgent starts: "+ instant.toString());
+                        }
+                        if (pat.hr[i[0]] < hrWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.hrFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Warning ends: " +instant.toString());
+                        }
+                    }
+                    else if (pat.hrFlag == "U"){
+                        if (pat.hr[i[0]] > hrWThreshold && pat.hr[i[0]] < hrUThreshold) {
+                            String hr = "High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Warning";
+                            pat.hrFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Urgent ends: "+ instant.toString());
+                            pat.alertHistoryHR.add("Warning starts: "+ instant.toString());
+
+                        }
+                        if (pat.hr[i[0]] > hrUThreshold) {
+                            String hr = "Very High Heart Rate";
+                            pat.abnormalDetails.add(hr);
+                            pat.alertStatus = "Urgent";
+                        }
+                        if (pat.hr[i[0]] < hrWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.hrFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryHR.add("Urgent ends: " +instant.toString());
+                        }
                     }
 
-                    if (pat.rr[i[0]] > rrWThreshold && pat.rr[i[0]] < rrUThreshold) {
-                        String rr = "High Respiratory Rate";
-                        pat.abnormalDetails.add(rr);
-                        pat.alertStatus = "Warning";
-                        pat.alertHistory.add("High Respiratory Rate @time: " + i[0] + " second \n");
+                    // RESPIRATORY RATE
+                    if (pat.rrFlag == "H"){
+                        if (pat.rr[i[0]] > rrWThreshold && pat.rr[i[0]] < rrUThreshold) {
+                            String rr = "High Respiratory Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Warning";
+                            pat.rrFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Warning Start: "+ instant.toString());
+                        }
+                        if (pat.rr[i[0]] > rrUThreshold) {
+                            String rr = "Very High Respiratory Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Urgent";
+                            pat.rrFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Urgent Start: "+instant.toString());
+                        }
                     }
+                    else if (pat.rrFlag == "W"){
+                        if (pat.rr[i[0]] > rrWThreshold && pat.rr[i[0]] < rrUThreshold) {
+                            String rr = "High Respiratory Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Warning";
+                        }
+                        if (pat.rr[i[0]] > rrUThreshold) {
+                            String rr = "Very High Respiratory Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Urgent";
+                            pat.rrFlag = "U";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Warning ends: "+ instant.toString());
+                            pat.alertHistoryRR.add("Urgent starts: "+ instant.toString());
+                        }
+                        if (pat.rr[i[0]] < rrWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.rrFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Warning ends: " +instant.toString());
+                        }
+                    }
+                    else if (pat.rrFlag == "U"){
+                        if (pat.rr[i[0]] > rrWThreshold && pat.rr[i[0]] < rrUThreshold) {
+                            String rr = "High Respiratory Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Warning";
+                            pat.rrFlag = "W";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Urgent ends: "+ instant.toString());
+                            pat.alertHistoryRR.add("Warning starts: "+ instant.toString());
 
-                    if (pat.temp[i[0]] > tempUThreshold) {
-                        String temp = "Very High Temperature";
-                        pat.abnormalDetails.add(temp);
-                        pat.alertStatus = "Urgent";
-                        pat.alertHistory.add("Very High Temperature @time: " + i[0] + " second \n");
+                        }
+                        if (pat.rr[i[0]] > rrUThreshold) {
+                            String rr = "Very High Heart Rate";
+                            pat.abnormalDetails.add(rr);
+                            pat.alertStatus = "Urgent";
+                        }
+                        if (pat.rr[i[0]] < rrWThreshold) {
+                            pat.alertStatus = "Healthy";
+                            pat.rrFlag = "H";
+                            Instant instant = clock.instant();
+                            pat.alertHistoryRR.add("Urgent ends: " +instant.toString());
+                        }
                     }
-
-                    if (pat.hr[i[0]] > hrUThreshold) {
-                        String hr = "Very High Heart Rate";
-                        pat.abnormalDetails.add(hr);
-                        pat.alertStatus = "Urgent";
-                        pat.alertHistory.add("Very High Heart Rate @time: " + i[0] + " second \n");
-                    }
-
-                    if (pat.rr[i[0]] > rrUThreshold) {
-                        String rr = "Very High Respiratory Rate";
-                        pat.abnormalDetails.add(rr);
-                        pat.alertStatus = "Urgent";
-                        pat.alertHistory.add("Very High Respiratory Rate @time: " + i[0] + " second \n");
-                    }
-
-                    // Add the emergency patients into alertList by creating an Alert class object for each of them
-                    if (pat.alertStatus == "Warning" || pat.alertStatus == "Urgent") {
-                        Alert a = new Alert(pat.name, pat.alertStatus, pat.abnormalDetails, pat.patLoc);
-                        alertList.add(a);
-                    }
-                    //abnormalDetails.clear();
-                    //pat.alertStatus = "Healthy";
 
                 }
 
@@ -170,10 +250,8 @@ public interface mainMenu {
 
             }
         };
-
         timer.schedule(alertCheck, 0,1000);
 
-        return alertList;
     }
 
 }
