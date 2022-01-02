@@ -37,6 +37,9 @@ public class EmergencyUIController extends JFrame {
 
     public EmergencyUIController(ArrayList<Patient> patientList){
 
+        // Get the length of the patient's vital's length (for now):
+        int duration = patientList.get(0).length;
+
         final int[] counter = {0};
         Timer timer = new Timer();
         TimerTask displayAlert = new TimerTask() {
@@ -51,20 +54,20 @@ public class EmergencyUIController extends JFrame {
                 WModel = new DefaultListModel();
                 warningDetailsList.setModel(WModel);
 
-                for (Patient aPat:patientList){
-                    if (aPat.alertStatus == "Urgent"){
-                        UModel.addElement(aPat.name + " " + aPat.abnormalDetails + " " + aPat.patLoc);
+                for (Patient pat:patientList){
+                    if (pat.alertStatus == "Urgent"){
+                        UModel.addElement(pat.name + ":  " + pat.abnormalDetails + " -- Locate at " + pat.patLoc);
                     }
-                    if (aPat.alertStatus == "Warning"){
-                        WModel.addElement(aPat.name + " " + aPat.abnormalDetails + " " + aPat.patLoc);
+                    if (pat.alertStatus == "Warning"){
+                        WModel.addElement(pat.name + ":  " + pat.abnormalDetails + " -- Locate at " + pat.patLoc);
                     }
 
-                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n Temp history:" + aPat.alertHistoryTemp+"\n HR history: " + aPat.alertHistoryHR+"\n RR history: " +aPat.alertHistoryRR+"\n");
+                    System.out.print(pat.name + " " + pat.alertStatus+" "+ pat.abnormalDetails+ "\n Temp history:" + pat.alertHistoryTemp+"\n HR history: " + pat.alertHistoryHR+"\n RR history: " +pat.alertHistoryRR+"\n");
 
                 }
 
                 counter[0]++;
-                if (counter[0]==20){        // hard code the time to stop
+                if (counter[0]==duration){
                     timer.cancel();
                 }
 
@@ -99,7 +102,6 @@ public class EmergencyUIController extends JFrame {
             }
         };
         emergencyButton.addActionListener(switchEmergency);
-
 
         setContentPane(mainPanel);
         setTitle("PatientMed");

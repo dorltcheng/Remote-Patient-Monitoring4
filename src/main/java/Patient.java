@@ -9,8 +9,7 @@ public class Patient {
     String alertStatus;
     String patLoc;
 
-    // should not be double - how?
-    int length;
+    int length;     // now temporarily store the length of the array
     double[] temp = new double[length];
     double[] bp = new double[length];
     double[] hr = new double[length];

@@ -101,8 +101,8 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <background color="-50630"/>
-                  <font size="16"/>
+                  <background color="-39326"/>
+                  <font size="18" style="1"/>
                 </properties>
               </component>
             </children>
@@ -124,8 +124,8 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <background color="-10149"/>
-                  <font size="16"/>
+                  <background color="-8336"/>
+                  <font size="18" style="1"/>
                 </properties>
               </component>
             </children>
