@@ -59,7 +59,7 @@ public class EmergencyUIController extends JFrame {
                         WModel.addElement(aPat.name + " " + aPat.abnormalDetails + " " + aPat.patLoc);
                     }
 
-                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n" + aPat.alertHistoryTemp+"\n" + aPat.alertHistoryHR+"\n"+aPat.alertHistoryRR+"\n");
+                    System.out.print(aPat.name + " " + aPat.alertStatus+" "+ aPat.abnormalDetails+ "\n Temp history:" + aPat.alertHistoryTemp+"\n HR history: " + aPat.alertHistoryHR+"\n RR history: " +aPat.alertHistoryRR+"\n");
 
                 }
 
@@ -71,26 +71,7 @@ public class EmergencyUIController extends JFrame {
             }
         };
         timer.schedule(displayAlert, 0, 1000);
-/*
-No need now:
 
-        UrgentPatName.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                Alert pat = (Alert) UrgentPatName.getSelectedValue();
-                urgentDetailsLabel.setText(pat.status + "\n" + pat.abnormalDetails + "\n Locate at " + pat.patLoc);
-            }
-        });
-
-        WarningPatName.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                Alert pat = (Alert) WarningPatName.getSelectedValue();
-                warningDetailsPanel.setText(pat.status + "\n" + pat.abnormalDetails + "\n Locate at " + pat.patLoc);
-            }
-        });
-
- */
 
         ActionListener switchWard = new ActionListener() {
             @Override

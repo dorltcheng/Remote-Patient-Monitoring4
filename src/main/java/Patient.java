@@ -8,6 +8,7 @@ public class Patient {
     String name;
     String alertStatus;
     String patLoc;
+
     // should not be double - how?
     int length;
     double[] temp = new double[length];
